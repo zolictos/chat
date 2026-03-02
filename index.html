@@ -1,302 +1,207 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP32 Smart Control Panel</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase Legacy SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
+    <title>apeda.shop | متجر الطباعة عند الطلب</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.5);
-            --bg: #0b0f1a;
-            --card-bg: rgba(23, 32, 51, 0.7);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --success: #10b981;
-            --card-border: rgba(255, 255, 255, 0.1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.1) 0px, transparent 50%);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-        }
-
-        .dashboard-card {
-            width: 100%;
-            max-width: 600px;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 28px;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .header h2 { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-        .header i { color: var(--accent); }
-
-        /* Unified Terminal Display */
-        .unified-terminal {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px inset rgba(255,255,255,0.05);
-            border-radius: 18px;
-            padding: 20px;
-            height: 300px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .log-entry {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 10px 14px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.02);
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .entry-content { font-family: 'Courier New', monospace; font-weight: 600; font-size: 15px; }
-        .entry-time { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
-
-        /* Types Styling */
-        .type-message { border-left: 3px solid var(--accent); color: var(--accent); }
-        .type-calculator { border-left: 3px solid var(--success); color: var(--success); }
-
-        .tag {
-            font-size: 9px;
-            text-transform: uppercase;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-bottom: 4px;
-            display: inline-block;
-        }
-        .tag-msg { background: rgba(59, 130, 246, 0.2); color: var(--accent); }
-        .tag-calc { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-
-        /* Input Controls */
-        .controls { display: flex; flex-direction: column; gap: 12px; }
-        input[type="text"] {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 14px 16px;
-            color: white;
-            outline: none;
-            transition: 0.3s;
-        }
-        input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
-
-        .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-        .btn {
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: 0.3s;
-            font-size: 14px;
-        }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-secondary { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--card-border); }
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-
-        .footer-credit {
-            margin-top: 30px;
-            font-size: 11px;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0.6;
-        }
-        .footer-credit .line { width: 20px; height: 1px; background: currentColor; }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            background: #1e293b;
-            color: #fff;
-            padding: 12px 25px;
-            border-radius: 10px;
-            transform: translateY(100px);
-            transition: 0.4s;
-            z-index: 1000;
-        }
-        .toast.show { transform: translateY(0); }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
+        .product-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .color-dot { cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        .color-dot.active { border-color: #2563eb; transform: scale(1.2); }
+        .whatsapp-float { position: fixed; bottom: 20px; left: 20px; z-index: 100; }
+        .hero-gradient { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        html { scroll-behavior: smooth; }
     </style>
 </head>
 <body>
 
-<div class="dashboard-card">
-    <div class="header">
-        <h2><i class="fa-solid fa-terminal"></i> System Terminal</h2>
-        <div style="font-size: 10px; color: var(--success);"><i class="fa-solid fa-circle"></i> Live Sync</div>
-    </div>
-
-    <!-- Unified Display Area -->
-    <div class="unified-terminal" id="mainTerminal">
-        <!-- Log entries will appear here -->
-    </div>
-
-    <div class="controls">
-        <input type="text" id="txtInput" placeholder="Type a message for OLED...">
-        <div class="action-row">
-            <button class="btn btn-primary" onclick="sendData('message', 'txtInput')">
-                <i class="fa-solid fa-paper-plane"></i> Send OLED
-            </button>
-            <button class="btn btn-secondary" onclick="clearTerminal()">
-                <i class="fa-solid fa-trash-can"></i> Clear Terminal
-            </button>
-        </div>
-    </div>
-</div>
-
-<div class="footer-credit">
-    <div class="line"></div>
-    <span>MODE BY ZOLIX</span>
-    <div class="line"></div>
-</div>
-
-<div id="toast" class="toast">Operation Successful</div>
-
-<script>
-    // ===== Firebase Setup =====
-    const firebaseConfig = {
-        databaseURL: "https://esp32-8d283-default-rtdb.firebaseio.com/"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const terminal = document.getElementById('mainTerminal');
-
-    // State to avoid duplicate entries on initial load
-    let lastMsg = null;
-    let lastCalc = null;
-
-    // Listen for OLED Messages
-    db.ref('message').on('value', snap => {
-        const val = snap.val();
-        if (val && val !== lastMsg) {
-            addEntry(val, 'message');
-            lastMsg = val;
-        }
-    });
-
-    // Listen for Calculator Results
-    db.ref('calculator').on('value', snap => {
-        const val = snap.val();
-        if (val && val !== lastCalc) {
-            addEntry(val, 'calculator');
-            lastCalc = val;
-        }
-    });
-
-    function addEntry(text, type) {
-        const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        
-        const entry = document.createElement('div');
-        entry.className = `log-entry type-${type}`;
-        
-        const tagLabel = type === 'message' ? 'OLED' : 'CALC';
-        const tagClass = type === 'message' ? 'tag-msg' : 'tag-calc';
-
-        entry.innerHTML = `
-            <div>
-                <span class="tag ${tagClass}">${tagLabel}</span>
-                <div class="entry-content">${text}</div>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-3xl font-black text-slate-900 tracking-tighter cursor-pointer" onclick="window.location.reload()">APEDA<span class="text-blue-600">.SHOP</span></div>
+            <div class="hidden md:flex space-x-reverse space-x-8 font-semibold text-slate-600">
+                <a href="#" class="hover:text-blue-600 transition">الرئيسية</a>
+                <a href="#products" class="hover:text-blue-600 transition">المنتجات</a>
+                <a href="#about" class="hover:text-blue-600 transition">من نحن</a>
             </div>
-            <div class="entry-time">${time}</div>
-        `;
-        
-        terminal.prepend(entry);
+            <!-- زر التواصل العلوي -->
+            <a href="https://wa.me/212777128266?text=مرحباً، أريد الاستفسار عن منتجات متجر Apeda" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full font-bold flex items-center gap-2 transition shadow-md">
+                <i class="fab fa-whatsapp"></i> تواصل معنا
+            </a>
+        </nav>
+    </header>
 
-        // Keep only last 30 entries
-        if (terminal.children.length > 30) {
-            terminal.removeChild(terminal.lastChild);
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-20 px-6">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">أناقتك، بتصميمك الخاص</h1>
+            <p class="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">نقدم لك أجود أنواع الأقمشة للتيشيرتات والهوديز مع طباعة احترافية تدوم طويلاً. اختر لونك المفضل واطلب الآن عبر الواتساب.</p>
+            <div class="flex justify-center gap-4">
+                <a href="#products" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-black text-lg transition shadow-lg">تسوق الآن</a>
+                <a href="https://wa.me/212777128266?text=أريد التعرف أكثر على خدمات الطباعة لديكم" target="_blank" class="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-black text-lg transition backdrop-blur-md border border-white/10">تعرف علينا</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="container mx-auto px-6 py-20">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+            <div>
+                <h2 class="text-4xl font-black text-slate-900 mb-2">أحدث التشكيلات</h2>
+                <div class="h-1.5 w-20 bg-blue-600 rounded-full"></div>
+            </div>
+            <p class="text-slate-500 font-medium">أكثر من 10 منتجات حصرية متوفرة باللونين الأبيض والأسود</p>
+        </div>
+
+        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- سيتم حقن المنتجات هنا عبر الجافا سكريبت -->
+        </div>
+    </section>
+
+    <!-- Features Section (About Us) -->
+    <section id="about" class="bg-slate-100 py-16">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="flex items-center gap-4 bg-white p-6 rounded-2xl shadow-sm">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">شحن سريع</h3>
+                    <p class="text-slate-500 text-sm">توصيل لباب منزلك في وقت قياسي</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 bg-white p-6 rounded-2xl shadow-sm">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">جودة عالية</h3>
+                    <p class="text-slate-500 text-sm">قطن 100% وطباعة لا تبهت</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 bg-white p-6 rounded-2xl shadow-sm">
+                <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">دعم متواصل</h3>
+                    <p class="text-slate-500 text-sm">نحن معك عبر الواتساب 24/7</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-12 px-6">
+        <div class="container mx-auto text-center">
+            <div class="text-3xl font-black mb-4 tracking-tighter">APEDA<span class="text-blue-500">.SHOP</span></div>
+            <p class="text-slate-400 mb-8 max-w-md mx-auto">خيارك الأول لمنتجات الطباعة عند الطلب بجودة عالمية وأسعار تنافسية.</p>
+            <div class="flex justify-center gap-6 mb-8 text-2xl">
+                <a href="#" class="hover:text-blue-500 transition"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-pink-500 transition"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-twitter"></i></a>
+            </div>
+            <div class="border-t border-slate-800 pt-8 text-slate-500 text-sm">
+                &copy; 2026 APEDA.SHOP. جميع الحقوق محفوظة.
+            </div>
+        </div>
+    </footer>
+
+    <!-- زر واتساب عائم ثابت -->
+    <a href="https://wa.me/212777128266?text=مرحباً، أحتاج إلى مساعدة بخصوص متجر apeda.shop" target="_blank" class="whatsapp-float bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-2xl hover:bg-green-600 transition-all hover:scale-110">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        const products = [
+            { id: 1, name: "تيشيرت كلاسيك عالي الجودة", type: "tshirt", price: "150 DH", imgWhite: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80" },
+            { id: 2, name: "هودي بريميوم شتوي", type: "hoodie", price: "280 DH", imgWhite: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80&sat=-100" },
+            { id: 3, name: "تيشيرت أوفر سايز عصري", type: "tshirt", price: "180 DH", imgWhite: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&q=80" },
+            { id: 4, name: "سويت شيرت قطن فاخر", type: "hoodie", price: "220 DH", imgWhite: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80&hue=300" },
+            { id: 5, name: "تيشيرت رياضي مسامي", type: "tshirt", price: "140 DH", imgWhite: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=500&q=80" },
+            { id: 6, name: "هودي بسحاب مريح", type: "hoodie", price: "300 DH", imgWhite: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80&sat=-80" },
+            { id: 7, name: "تيشيرت ياقة V", type: "tshirt", price: "160 DH", imgWhite: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80" },
+            { id: 8, name: "سويت شيرت بجيوب", type: "hoodie", price: "250 DH", imgWhite: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500&q=80&sat=-100" },
+            { id: 9, name: "تيشيرت بولو أنيق", type: "tshirt", price: "190 DH", imgWhite: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80" },
+            { id: 10, name: "هودي نسائي ناعم", type: "hoodie", price: "260 DH", imgWhite: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80&sat=-50" },
+            { id: 11, name: "تيشيرت صيفي خفيف", type: "tshirt", price: "130 DH", imgWhite: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=500&q=80" },
+            { id: 12, name: "هودي الشتاء القوي", type: "hoodie", price: "320 DH", imgWhite: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80", imgBlack: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80&sat=-95" }
+        ];
+
+        const grid = document.getElementById('product-grid');
+        const selectedColors = {};
+
+        function renderProducts() {
+            products.forEach(product => {
+                selectedColors[product.id] = 'white'; // افتراضياً أبيض
+                const card = document.createElement('div');
+                card.className = "product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col";
+                card.innerHTML = `
+                    <div class="relative overflow-hidden aspect-[4/5] bg-slate-50">
+                        <img id="img-${product.id}" src="${product.imgWhite}" alt="${product.name}" class="w-full h-full object-cover transition-opacity duration-300">
+                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-slate-800 shadow-sm uppercase tracking-widest">${product.type}</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-slate-800 mb-2 truncate">${product.name}</h3>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-blue-600 font-black text-xl">${product.price}</span>
+                            <div class="flex gap-2">
+                                <span onclick="updateColor(${product.id}, 'white')" id="dot-white-${product.id}" class="color-dot active w-6 h-6 rounded-full bg-white border-2 border-slate-200 shadow-inner" title="أبيض"></span>
+                                <span onclick="updateColor(${product.id}, 'black')" id="dot-black-${product.id}" class="color-dot w-6 h-6 rounded-full bg-slate-900 border-2 border-slate-900 shadow-inner" title="أسود"></span>
+                            </div>
+                        </div>
+                        <button onclick="orderViaWhatsapp(${product.id})" class="w-full bg-slate-900 hover:bg-green-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95">
+                            <i class="fab fa-whatsapp"></i> اطلب عبر واتساب
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
         }
-    }
 
-    function sendData(path, inputId) {
-        const input = document.getElementById(inputId);
-        const val = input.value.trim();
-        
-        if(!val) {
-            showToast("Field is empty!");
-            return;
-        }
+        window.updateColor = function(id, color) {
+            const product = products.find(p => p.id === id);
+            const img = document.getElementById(`img-${id}`);
+            const dotWhite = document.getElementById(`dot-white-${id}`);
+            const dotBlack = document.getElementById(`dot-black-${id}`);
 
-        db.ref(path).set(val)
-            .then(() => {
-                showToast("✅ Sent Successfully");
-                input.value = "";
-            })
-            .catch(() => showToast("❌ Connection Error"));
-    }
+            selectedColors[id] = color;
 
-    function clearTerminal() {
-        terminal.innerHTML = "";
-        showToast("Terminal Cleaned");
-    }
+            if (color === 'black') {
+                img.src = product.imgBlack;
+                dotBlack.classList.add('active');
+                dotWhite.classList.remove('active');
+            } else {
+                img.src = product.imgWhite;
+                dotWhite.classList.add('active');
+                dotBlack.classList.remove('active');
+            }
+        };
 
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
+        window.orderViaWhatsapp = function(id) {
+            const product = products.find(p => p.id === id);
+            const colorName = selectedColors[id] === 'white' ? 'الأبيض' : 'الأسود';
+            const phoneNumber = "212777128266";
+            
+            // رسالة احترافية تظهر لك في الواتساب عند استلام الطلب
+            const message = `مرحباً Apeda Shop، أود طلب المنتج التالي:\n\n` + 
+                            `👕 *المنتج:* ${product.name}\n` +
+                            `🏷️ *النوع:* ${product.type}\n` +
+                            `🎨 *اللون:* ${colorName}\n` +
+                            `💰 *السعر:* ${product.price}\n\n` +
+                            `يرجى تزويدي بتفاصيل الشحن.`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            // فتح واتساب مباشرة في نافذة جديدة
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+        };
 
-    document.getElementById('txtInput').addEventListener('keypress', e => {
-        if(e.key === 'Enter') sendData('message', 'txtInput');
-    });
-</script>
-
+        window.onload = renderProducts;
+    </script>
 </body>
 </html>
