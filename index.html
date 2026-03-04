@@ -2,260 +2,792 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>apeda.shop | متجر الأناقة المخصصة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>APEDA | إصدار محدود - 4 مونتوجات</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#0f172a',
-                        darkCard: '#1e293b'
-                    }
-                }
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #ffffff;
+            color: #111111;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        /* نفس تصميم DOSEI بالضبط */
+        .nav-link {
+            position: relative;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            padding-bottom: 4px;
+            color: #1e1e1e;
+            transition: color 0.2s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1.5px;
+            bottom: 0;
+            left: 0;
+            background-color: #000;
+            transition: width 0.25s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* بطاقة المنتج */
+        .product-card {
+            transition: transform 0.25s ease;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* overlay يظهر عند الهوفر - مثل DOSEI */
+        .product-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 0;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border-top: 1px solid #f0f0f0;
+            backdrop-filter: blur(5px);
+        }
+        .product-card:hover .product-overlay {
+            transform: translateY(0);
+        }
+
+        /* منتقي الكمية */
+        .quantity-selector {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #e5e5e5;
+            background: white;
+            height: 40px;
+            width: 100%;
+        }
+        .quantity-selector button {
+            width: 36px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #333;
+            background: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .quantity-selector button:hover {
+            background: #f5f5f5;
+        }
+        .quantity-selector input {
+            width: 45px;
+            height: 100%;
+            text-align: center;
+            border: none;
+            border-left: 1px solid #e5e5e5;
+            border-right: 1px solid #e5e5e5;
+            font-size: 0.9rem;
+            font-weight: 500;
+            -moz-appearance: textfield;
+        }
+        .quantity-selector input::-webkit-outer-spin-button,
+        .quantity-selector input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* أيقونة السلة */
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: #000;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* علامة محدود */
+        .sold-out {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(2px);
+            border: 1px solid #eee;
+            z-index: 10;
+        }
+
+        /* شريط الإشعارات */
+        .announcement-bar {
+            background: #000;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        /* تحسينات للهاتف المحمول */
+        @media (max-width: 640px) {
+            .product-overlay {
+                padding: 6px 0;
+                font-size: 0.65rem;
+            }
+            .announcement-bar {
+                font-size: 0.65rem;
+                padding: 8px 0;
+            }
+            .cart-badge {
+                width: 16px;
+                height: 16px;
+                font-size: 0.6rem;
+                top: -6px;
+                right: -8px;
+            }
+            .product-card h3 {
+                font-size: 0.75rem;
+            }
+            .product-card .price {
+                font-size: 0.7rem;
+            }
+            .product-card .color-dot {
+                width: 16px;
+                height: 16px;
+            }
+            .size-selector {
+                font-size: 0.65rem;
+            }
+            .size-selector span {
+                padding: 2px 4px;
+            }
+            .buy-btn {
+                font-size: 0.7rem;
+                padding: 8px 0;
             }
         }
-    </script>
-    <style>
-        body { font-family: 'Cairo', sans-serif; transition: background-color 0.3s, color 0.3s; }
-        .hero-section { background: radial-gradient(circle at top right, #f1f5f9 0%, #ffffff 100%); }
-        .dark .hero-section { background: radial-gradient(circle at top right, #1e293b 0%, #0f172a 100%); }
-        
-        .product-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .product-card:hover { transform: translateY(-8px); }
-        
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .dark .glass-nav { background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        
-        .color-dot {
-            width: 2rem;
-            height: 2rem;
-            border-radius: 9999px;
-            transition: all 0.3s ease;
+
+        /* تحسينات للشاشات المتوسطة (تابلت) */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .product-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        /* تحسينات للشاشات الكبيرة (حاسوب) */
+        @media (min-width: 1025px) {
+            .product-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        /* فلتر التبويبات */
+        .filter-tab {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #888;
+            transition: color 0.2s;
             cursor: pointer;
+            letter-spacing: 0.5px;
+            padding-bottom: 8px;
+        }
+        .filter-tab.active {
+            color: #000;
+            border-bottom: 2px solid #000;
+        }
+
+        /* نقطة اللون */
+        .color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
             border: 2px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
         }
         .color-dot.active {
-            border-color: #2563eb;
-            transform: scale(1.15);
-            box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+            border-color: #000;
+            transform: scale(1.1);
+        }
+        .color-dot:hover {
+            transform: scale(1.1);
         }
 
-        .theme-toggle {
+        /* منتقي المقاس */
+        .size-selector {
+            display: flex;
+            gap: 4px;
+            margin: 8px 0;
+        }
+        .size-selector span {
+            border: 1px solid #e5e5e5;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
             cursor: pointer;
-            padding: 10px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+            min-width: 35px;
+            text-align: center;
         }
-        .theme-toggle:hover { background: rgba(0,0,0,0.05); }
-        .dark .theme-toggle:hover { background: rgba(255,255,255,0.1); }
+        .size-selector span.active {
+            background: #000;
+            color: white;
+            border-color: #000;
+        }
+        .size-selector span:hover {
+            background: #f5f5f5;
+        }
+        .size-selector span.active:hover {
+            background: #000;
+        }
 
-        @media (max-width: 640px) {
-            .hero-title { font-size: 2.75rem !important; line-height: 1.2; }
-            .mobile-padding { padding-left: 1.5rem; padding-right: 1.5rem; }
+        /* تنسيق الصور */
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
         }
-        .whatsapp-float { position: fixed; bottom: 30px; left: 30px; z-index: 100; }
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        /* زر الشراء */
+        .buy-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px 0;
+            background: #000;
+            color: white;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #000;
+        }
+        .buy-btn:hover {
+            background: white;
+            color: black;
+        }
     </style>
 </head>
-<body class="bg-white text-slate-900 dark:bg-darkBg dark:text-slate-100">
+<body>
 
-    <!-- Navigation -->
-    <nav class="glass-nav sticky top-0 z-50 py-4 px-6">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="text-2xl font-black tracking-tighter cursor-pointer select-none" onclick="window.scrollTo(0,0)">
-                APEDA<span class="text-blue-600">.SHOP</span>
-            </div>
-            <div class="flex items-center gap-2 md:gap-4">
-                <button onclick="toggleDarkMode()" class="theme-toggle text-xl">
-                    <i id="theme-icon" class="fas fa-moon"></i>
-                </button>
-                <a href="https://wa.me/212777128266" target="_blank" class="bg-slate-900 text-white dark:bg-blue-600 p-2.5 rounded-full md:px-6 md:py-2.5 md:rounded-xl font-bold flex items-center gap-2 hover:bg-blue-600 transition-all">
-                    <i class="fab fa-whatsapp text-lg"></i>
-                    <span class="hidden md:inline">اطلب عبر واتساب</span>
-                </a>
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="container mx-auto px-4">
+            <span>✧ FREE SHIPPING ON ORDERS OVER 500 DH ✧ LIMITED EDITION - 4 PRODUCTS ONLY ✧</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                
+                <!-- Menu icon للهاتف -->
+                <div class="md:hidden">
+                    <button class="text-xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+
+                <!-- القائمة الرئيسية - ديسكتوب -->
+                <nav class="hidden md:flex items-center space-x-8 space-x-reverse">
+                    <a href="#" class="nav-link">HOME</a>
+                    <a href="#" class="nav-link">SHOP</a>
+                    <a href="#" class="nav-link active font-medium border-b-2 border-black">NEW</a>
+                    <a href="#" class="nav-link">ABOUT</a>
+                </nav>
+
+                <!-- Logo -->
+                <div class="text-xl md:text-2xl font-black tracking-tighter">
+                    APEDA<span class="text-gray-300 font-light mx-px">.</span>
+                </div>
+
+                <!-- أيقونات -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <button class="hidden md:block text-sm hover:opacity-60">
+                        <i class="far fa-user"></i>
+                    </button>
+                    <button class="text-sm hover:opacity-60 relative">
+                        <i class="far fa-heart"></i>
+                        <span class="cart-badge hidden">0</span>
+                    </button>
+                    <button class="text-sm hover:opacity-60 relative">
+                        <i class="far fa-shopping-bag"></i>
+                        <span class="cart-badge">0</span>
+                    </button>
+                </div>
             </div>
         </div>
-    </nav>
+    </header>
+
+    <!-- شريط البحث للهاتف -->
+    <div class="md:hidden px-4 py-3 border-b border-gray-100">
+        <div class="relative">
+            <input type="text" placeholder="Search" 
+                   class="w-full border border-gray-200 rounded-md py-2.5 px-4 text-sm focus:outline-none focus:border-gray-400">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-sm"></i>
+        </div>
+    </div>
 
     <!-- Hero Section -->
-    <section class="hero-section pt-16 pb-24 md:pt-24 md:pb-32 px-6">
-        <div class="container mx-auto text-center max-w-4xl">
-            <span class="inline-block bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-4 py-1.5 rounded-full text-sm font-bold mb-6 tracking-wide">جديدنا لعام 2026</span>
-            <h1 class="hero-title text-5xl md:text-8xl font-black mb-8 tracking-tight">الجودة تليق بك.</h1>
-            <p class="text-lg md:text-xl text-slate-500 dark:text-slate-400 mb-12 leading-relaxed max-w-2xl mx-auto">
-                تصاميم حصرية، أقمشة فاخرة، وتجربة تسوق فريدة. اختر قطعتك المفضلة وسنتكفل نحن بالباقي.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#products" class="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-xl shadow-blue-200 dark:shadow-none hover:bg-blue-700 hover:shadow-none transition-all">تسوق المجموعة</a>
-            </div>
+    <section class="py-8 md:py-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-2xl md:text-4xl font-light mb-2 tracking-wide">4 مونتوجات حصرية</h1>
+            <p class="text-gray-400 text-xs md:text-sm max-w-md mx-auto">إصدار محدود جداً - قطعتان من كل تصميم</p>
         </div>
     </section>
 
-    <!-- Products Section -->
-    <section id="products" class="py-24 mobile-padding">
+    <!-- Filter Tabs -->
+    <div class="container mx-auto px-4 mb-6">
+        <div class="flex justify-center items-center space-x-6 space-x-reverse border-b border-gray-100 pb-4">
+            <span class="filter-tab active">الكل</span>
+            <span class="filter-tab">الأحدث</span>
+            <span class="filter-tab">الأكثر مبيعاً</span>
+        </div>
+    </div>
+
+    <!-- GRID المنتجات - متجاوب مع جميع الشاشات -->
+    <section class="pb-16 md:pb-20">
         <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-5xl font-black mb-4">المجموعة المختارة</h2>
-                <p class="text-slate-500 dark:text-slate-400 font-medium">قطع صُممت بعناية لتناسب ذوقك الرفيع</p>
+            <!-- شبكة متجاوبة: 
+                 - هاتف: عمود واحد (4 صفوف)
+                 - تابلت: عمودين (2 صفوف)
+                 - حاسوب: 4 أعمدة (صف واحد)
+            -->
+            <div class="product-grid max-w-7xl mx-auto">
+                
+                <!-- مونتوج 1 - تيشيرت إسينشال (أسود) -->
+                <div class="product-card group mb-3">
+                    <div class="relative bg-gray-50 aspect-[3/4] mb-2 overflow-hidden rounded-sm">
+                        <!-- الصورة من مجلد images/ -->
+                        <img src="images/12.png" alt="تيشيرت إسينشال أسود" class="product-image" onerror="this.src='https://placehold.co/600x800/000000/ffffff?text=BLACK+TEE'">
+                        
+                        <!-- علامة محدود -->
+                        <span class="sold-out">1/2</span>
+                        
+                        <!-- Overlay مثل DOSEI -->
+                        <div class="product-overlay">
+                            <span class="text-xs font-medium">اختر الخيارات</span>
+                        </div>
+                    </div>
+                    
+                    <div class="px-1">
+                        <h3 class="font-medium text-sm md:text-base truncate">تيشيرت إسينشال</h3>
+                        <p class="text-gray-400 text-xs md:text-sm mb-1 price">150 DH</p>
+                        
+                        <!-- المقاسات -->
+                        <div class="size-selector" data-product="1">
+                            <span class="active" data-size="s">S</span>
+                            <span data-size="m">M</span>
+                            <span data-size="l">L</span>
+                            <span data-size="xl">XL</span>
+                        </div>
+                        
+                        <!-- الألوان المتاحة -->
+                        <div class="flex items-center space-x-2 space-x-reverse mb-2">
+                            <span class="color-dot active bg-black" data-color="black" data-product="1"></span>
+                            <span class="color-dot bg-white border border-gray-300" data-color="white" data-product="1"></span>
+                        </div>
+                        
+                        <!-- منتقي الكمية -->
+                        <div class="quantity-selector w-full" data-product="1">
+                            <button class="qty-minus">−</button>
+                            <input type="text" value="1" readonly class="qty-input">
+                            <button class="qty-plus">+</button>
+                        </div>
+                        
+                        <!-- زر الشراء - واتساب -->
+                        <button class="buy-btn w-full mt-2 buy-whatsapp" data-product="1" data-name="تيشيرت إسينشال" data-price="150">
+                            <i class="fab fa-whatsapp ml-1"></i> شراء عبر واتساب
+                        </button>
+                    </div>
+                </div>
+
+                <!-- مونتوج 2 - تيشيرت إسينشال (أبيض) -->
+                <div class="product-card group mb-3">
+                    <div class="relative bg-gray-50 aspect-[3/4] mb-2 overflow-hidden rounded-sm">
+                        <!-- الصورة من مجلد images/ -->
+                        <img src="images/11.png" alt="تيشيرت إسينشال أبيض" class="product-image" onerror="this.src='https://placehold.co/600x800/ffffff/000000?text=WHITE+TEE'">
+                        
+                        <span class="sold-out">2/2</span>
+                        
+                        <div class="product-overlay">
+                            <span class="text-xs font-medium">اختر الخيارات</span>
+                        </div>
+                    </div>
+                    
+                    <div class="px-1">
+                        <h3 class="font-medium text-sm md:text-base truncate">تيشيرت إسينشال</h3>
+                        <p class="text-gray-400 text-xs md:text-sm mb-1 price">150 DH</p>
+                        
+                        <!-- المقاسات -->
+                        <div class="size-selector" data-product="2">
+                            <span class="active" data-size="s">S</span>
+                            <span data-size="m">M</span>
+                            <span data-size="l">L</span>
+                            <span data-size="xl">XL</span>
+                        </div>
+                        
+                        <!-- الألوان -->
+                        <div class="flex items-center space-x-2 space-x-reverse mb-2">
+                            <span class="color-dot bg-black" data-color="black" data-product="2"></span>
+                            <span class="color-dot active bg-white border border-gray-300" data-color="white" data-product="2"></span>
+                        </div>
+                        
+                        <div class="quantity-selector w-full" data-product="2">
+                            <button class="qty-minus">−</button>
+                            <input type="text" value="1" readonly class="qty-input">
+                            <button class="qty-plus">+</button>
+                        </div>
+                        
+                        <button class="buy-btn w-full mt-2 buy-whatsapp" data-product="2" data-name="تيشيرت إسينشال" data-price="150">
+                            <i class="fab fa-whatsapp ml-1"></i> شراء عبر واتساب
+                        </button>
+                    </div>
+                </div>
+
+                <!-- مونتوج 3 - سويت شيرت كلاسيك (أسود) -->
+                <div class="product-card group mb-3">
+                    <div class="relative bg-gray-50 aspect-[3/4] mb-2 overflow-hidden rounded-sm">
+                        <!-- الصورة من مجلد images/ -->
+                        <img src="images/22.png" alt="سويت شيرت كلاسيك أسود" class="product-image" onerror="this.src='https://placehold.co/600x800/000000/ffffff?text=BLACK+SWEATER'">
+                        
+                        <span class="sold-out">1/2</span>
+                        
+                        <div class="product-overlay">
+                            <span class="text-xs font-medium">اختر الخيارات</span>
+                        </div>
+                    </div>
+                    
+                    <div class="px-1">
+                        <h3 class="font-medium text-sm md:text-base truncate">سويت شيرت كلاسيك</h3>
+                        <p class="text-gray-400 text-xs md:text-sm mb-1 price">199 DH</p>
+                        
+                        <!-- المقاسات -->
+                        <div class="size-selector" data-product="3">
+                            <span class="active" data-size="s">S</span>
+                            <span data-size="m">M</span>
+                            <span data-size="l">L</span>
+                            <span data-size="xl">XL</span>
+                        </div>
+                        
+                        <!-- الألوان -->
+                        <div class="flex items-center space-x-2 space-x-reverse mb-2">
+                            <span class="color-dot active bg-black" data-color="black" data-product="3"></span>
+                            <span class="color-dot bg-white border border-gray-300" data-color="white" data-product="3"></span>
+                        </div>
+                        
+                        <div class="quantity-selector w-full" data-product="3">
+                            <button class="qty-minus">−</button>
+                            <input type="text" value="1" readonly class="qty-input">
+                            <button class="qty-plus">+</button>
+                        </div>
+                        
+                        <button class="buy-btn w-full mt-2 buy-whatsapp" data-product="3" data-name="سويت شيرت كلاسيك" data-price="199">
+                            <i class="fab fa-whatsapp ml-1"></i> شراء عبر واتساب
+                        </button>
+                    </div>
+                </div>
+
+                <!-- مونتوج 4 - سويت شيرت كلاسيك (أبيض) -->
+                <div class="product-card group mb-3">
+                    <div class="relative bg-gray-50 aspect-[3/4] mb-2 overflow-hidden rounded-sm">
+                        <!-- الصورة من مجلد images/ -->
+                        <img src="images/21.png" alt="سويت شيرت كلاسيك أبيض" class="product-image" onerror="this.src='https://placehold.co/600x800/ffffff/000000?text=WHITE+SWEATER'">
+                        
+                        <span class="sold-out">2/2</span>
+                        
+                        <div class="product-overlay">
+                            <span class="text-xs font-medium">اختر الخيارات</span>
+                        </div>
+                    </div>
+                    
+                    <div class="px-1">
+                        <h3 class="font-medium text-sm md:text-base truncate">سويت شيرت كلاسيك</h3>
+                        <p class="text-gray-400 text-xs md:text-sm mb-1 price">199 DH</p>
+                        
+                        <!-- المقاسات -->
+                        <div class="size-selector" data-product="4">
+                            <span class="active" data-size="s">S</span>
+                            <span data-size="m">M</span>
+                            <span data-size="l">L</span>
+                            <span data-size="xl">XL</span>
+                        </div>
+                        
+                        <!-- الألوان -->
+                        <div class="flex items-center space-x-2 space-x-reverse mb-2">
+                            <span class="color-dot bg-black" data-color="black" data-product="4"></span>
+                            <span class="color-dot active bg-white border border-gray-300" data-color="white" data-product="4"></span>
+                        </div>
+                        
+                        <div class="quantity-selector w-full" data-product="4">
+                            <button class="qty-minus">−</button>
+                            <input type="text" value="1" readonly class="qty-input">
+                            <button class="qty-plus">+</button>
+                        </div>
+                        
+                        <button class="buy-btn w-full mt-2 buy-whatsapp" data-product="4" data-name="سويت شيرت كلاسيك" data-price="199">
+                            <i class="fab fa-whatsapp ml-1"></i> شراء عبر واتساب
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Grid: 4 Products -->
-            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-                
-                <!-- Product 1 -->
-                <div class="product-card group">
-                    <div class="relative rounded-[2rem] overflow-hidden mb-6 aspect-[4/5] bg-slate-100 dark:bg-slate-800 shadow-sm">
-                        <img id="img-1" src="" alt="تيشيرت إسينشال" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold mb-2">تيشيرت إسينشال</h3>
-                        <p class="text-blue-600 font-black text-xl mb-4">150 DH</p>
-                        <div class="flex justify-center gap-3 mb-5">
-                            <button onclick="updateColor(1, 'white')" class="color-dot bg-white border-slate-200" id="dot-white-1"></button>
-                            <button onclick="updateColor(1, 'black')" class="color-dot bg-black" id="dot-black-1"></button>
-                        </div>
-                        <button onclick="orderViaWhatsapp(1)" class="w-full py-3.5 rounded-xl bg-slate-900 text-white dark:bg-blue-600 font-bold hover:bg-blue-600 transition-all active:scale-95 shadow-md">
-                            اطلب الآن <i class="fab fa-whatsapp mr-2"></i>
-                        </button>
-                    </div>
+            <!-- رسالة الكمية المحدودة -->
+            <div class="text-center mt-8 md:mt-12">
+                <div class="inline-flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full">
+                    <span class="w-2 h-2 bg-black rounded-full animate-pulse"></span>
+                    <span class="text-xs font-medium tracking-wider">إصدار محدود - 8 قطع فقط متاحة</span>
                 </div>
-
-                <!-- Product 2 (New Hoodie) -->
-                <div class="product-card group">
-                    <div class="relative rounded-[2rem] overflow-hidden mb-6 aspect-[4/5] bg-slate-100 dark:bg-slate-800 shadow-sm">
-                        <img id="img-4" src="" alt="Hoodie Special" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold mb-2">HOODIE</h3>
-                        <p class="text-blue-600 font-black text-xl mb-4">150 DH</p>
-                        <div class="flex justify-center gap-3 mb-5">
-                            <button onclick="updateColor(4, 'white')" class="color-dot bg-white border-slate-200" id="dot-white-4"></button>
-                            <button onclick="updateColor(4, 'black')" class="color-dot bg-black" id="dot-black-4"></button>
-                        </div>
-                        <button onclick="orderViaWhatsapp(4)" class="w-full py-3.5 rounded-xl bg-slate-900 text-white dark:bg-blue-600 font-bold hover:bg-blue-600 transition-all active:scale-95 shadow-md">
-                            اطلب الآن <i class="fab fa-whatsapp mr-2"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product 3 -->
-                <div class="product-card group">
-                    <div class="relative rounded-[2rem] overflow-hidden mb-6 aspect-[4/5] bg-slate-100 dark:bg-slate-800 shadow-sm">
-                        <img id="img-2" src="" alt="هودي بريميوم" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold mb-2">هودي بريميوم</h3>
-                        <p class="text-blue-600 font-black text-xl mb-4">150 DH</p>
-                        <div class="flex justify-center gap-3 mb-5">
-                            <button onclick="updateColor(2, 'white')" class="color-dot bg-white border-slate-200" id="dot-white-2"></button>
-                            <button onclick="updateColor(2, 'black')" class="color-dot bg-black" id="dot-black-2"></button>
-                        </div>
-                        <button onclick="orderViaWhatsapp(2)" class="w-full py-3.5 rounded-xl bg-slate-900 text-white dark:bg-blue-600 font-bold hover:bg-blue-600 transition-all active:scale-95 shadow-md">
-                            اطلب الآن <i class="fab fa-whatsapp mr-2"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Product 4 -->
-                <div class="product-card group">
-                    <div class="relative rounded-[2rem] overflow-hidden mb-6 aspect-[4/5] bg-slate-100 dark:bg-slate-800 shadow-sm">
-                        <img id="img-3" src="" alt="سويت شيرت كلاسيك" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    </div>
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold mb-2">سويت شيرت كلاسيك</h3>
-                        <p class="text-blue-600 font-black text-xl mb-4">199 DH</p>
-                        <div class="flex justify-center gap-3 mb-5">
-                            <button onclick="updateColor(3, 'white')" class="color-dot bg-white border-slate-200" id="dot-white-3"></button>
-                            <button onclick="updateColor(3, 'black')" class="color-dot bg-black" id="dot-black-3"></button>
-                        </div>
-                        <button onclick="orderViaWhatsapp(3)" class="w-full py-3.5 rounded-xl bg-slate-900 text-white dark:bg-blue-600 font-bold hover:bg-blue-600 transition-all active:scale-95 shadow-md">
-                            اطلب الآن <i class="fab fa-whatsapp mr-2"></i>
-                        </button>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-slate-50 dark:bg-slate-900/50 py-20 px-6 border-t border-slate-100 dark:border-slate-800">
-        <div class="container mx-auto flex flex-col items-center">
-            <div class="text-3xl font-black mb-8">APEDA<span class="text-blue-600">.SHOP</span></div>
-            <div class="flex gap-8 mb-10 text-slate-400 font-bold">
-                <a href="#" class="hover:text-blue-600 transition">انستقرام</a>
-                <a href="#" class="hover:text-blue-600 transition">تيك توك</a>
-                <a href="#" class="hover:text-blue-600 transition">فيسبوك</a>
+    <footer class="border-t border-gray-100 bg-white pt-10 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-10">
+                <div>
+                    <h4 class="font-bold text-xs mb-4 tracking-wider">ABOUT</h4>
+                    <ul class="space-y-2 text-xs text-gray-500">
+                        <li><a href="#" class="hover:text-black">Our Story</a></li>
+                        <li><a href="#" class="hover:text-black">Sustainability</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs mb-4 tracking-wider">HELP</h4>
+                    <ul class="space-y-2 text-xs text-gray-500">
+                        <li><a href="#" class="hover:text-black">FAQs</a></li>
+                        <li><a href="#" class="hover:text-black">Shipping</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs mb-4 tracking-wider">FOLLOW</h4>
+                    <ul class="space-y-2 text-xs text-gray-500">
+                        <li><a href="#" class="hover:text-black">Instagram</a></li>
+                        <li><a href="#" class="hover:text-black">TikTok</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs mb-4 tracking-wider">NEWSLETTER</h4>
+                    <div class="flex">
+                        <input type="email" placeholder="Email" class="border border-gray-200 px-3 py-2 text-xs flex-1">
+                        <button class="bg-black text-white px-3 text-xs">OK</button>
+                    </div>
+                </div>
             </div>
-            <p class="text-slate-400 text-sm font-medium">&copy; 2026 APEDA.SHOP. كل الحقوق محفوظة.</p>
+            <div class="text-center text-gray-400 text-[0.65rem] tracking-wider">
+                © 2026 APEDA — LIMITED EDITION
+            </div>
         </div>
     </footer>
 
-    <!-- Whatsapp Floating Button -->
-    <a href="https://wa.me/212777128266" target="_blank" class="whatsapp-float bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:scale-110 transition-all">
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/212777128266" target="_blank" 
+       class="fixed bottom-4 left-4 md:bottom-6 md:left-6 bg-black text-white w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-xl md:text-2xl shadow-lg hover:bg-gray-800 transition z-50">
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <!-- JavaScript -->
     <script>
-        const productsData = {
-            1: { name: "تيشيرت إسينشال", price: "150 DH", imgWhite: "images/11.png", imgBlack: "images/12.png" },
-            2: { name: "هودي بريميوم", price: "150 DH", imgWhite: "images/31.png", imgBlack: "images/32.png" },
-            3: { name: "سويت شيرت كلاسيك", price: "199 DH", imgWhite: "images/21.png", imgBlack: "images/22.png" },
-            4: { name: "HOODIE", price: "150 DH", imgWhite: "images/41.png", imgBlack: "images/42.png" }
-        };
-
-        const currentSelections = { 1: 'black', 2: 'black', 3: 'black', 4: 'black' };
-
-        window.updateColor = function(id, color) {
-            currentSelections[id] = color;
-            const product = productsData[id];
-            const imgElement = document.getElementById(`img-${id}`);
-            const whiteDot = document.getElementById(`dot-white-${id}`);
-            const blackDot = document.getElementById(`dot-black-${id}`);
-
-            if (color === 'black') {
-                imgElement.src = product.imgBlack;
-                blackDot.classList.add('active');
-                whiteDot.classList.remove('active');
-            } else {
-                imgElement.src = product.imgWhite;
-                whiteDot.classList.add('active');
-                blackDot.classList.remove('active');
-            }
-        };
-
-        window.orderViaWhatsapp = function(id) {
-            const product = productsData[id];
-            const colorName = currentSelections[id] === 'white' ? 'الأبيض' : 'الأسود';
-            const phone = "212777128266";
-            const text = `مرحباً Apeda Shop، أريد طلب:\n\n🛍️ *المنتج:* ${product.name}\n🎨 *اللون:* ${colorName}\n💰 *السعر:* ${product.price}\n\nيرجى التواصل معي لإكمال الطلب.`;
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
-        };
-
-        window.toggleDarkMode = function() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                icon.classList.replace('fa-sun', 'fa-moon');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                icon.classList.replace('fa-moon', 'fa-sun');
-                localStorage.setItem('theme', 'dark');
-            }
-        };
-
         window.onload = function() {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
-            }
-            [1, 2, 3, 4].forEach(id => updateColor(id, 'black'));
+            console.log('✅ APEDA - 4 مونتوجات متجاوبة مع جميع الشاشات');
+            
+            // تفعيل أزرار الكمية
+            document.querySelectorAll('.quantity-selector').forEach(selector => {
+                const minus = selector.querySelector('.qty-minus');
+                const plus = selector.querySelector('.qty-plus');
+                const input = selector.querySelector('.qty-input');
+                
+                minus.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    let val = parseInt(input.value);
+                    if (val > 1) {
+                        input.value = val - 1;
+                    }
+                });
+                
+                plus.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    let val = parseInt(input.value);
+                    if (val < 5) {
+                        input.value = val + 1;
+                    } else {
+                        alert('الكمية القصوى لهذا الإصدار 5 قطع');
+                    }
+                });
+            });
+
+            // تفعيل أزرار المقاسات
+            document.querySelectorAll('.size-selector span').forEach(size => {
+                size.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const selector = this.closest('.size-selector');
+                    selector.querySelectorAll('span').forEach(s => {
+                        s.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+
+            // تفعيل أزرار الشراء عبر واتساب
+            document.querySelectorAll('.buy-whatsapp').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    const productCard = this.closest('.product-card');
+                    const productName = this.dataset.name;
+                    const productPrice = this.dataset.price;
+                    
+                    // الحصول على الكمية
+                    const qty = productCard.querySelector('.qty-input').value;
+                    
+                    // الحصول على اللون المختار
+                    const color = productCard.querySelector('.color-dot.active').dataset.color;
+                    const colorName = color === 'black' ? 'أسود' : 'أبيض';
+                    
+                    // الحصول على المقاس المختار
+                    const sizeElement = productCard.querySelector('.size-selector span.active');
+                    const size = sizeElement ? sizeElement.dataset.size.toUpperCase() : 'غير محدد';
+                    
+                    // التحقق من اختيار المقاس
+                    if (!sizeElement) {
+                        alert('❌ الرجاء اختيار المقاس المناسب');
+                        return;
+                    }
+                    
+                    // إنشاء رسالة واتساب
+                    const phoneNumber = '212777128266';
+                    
+                    const message = `مرحباً Apeda Shop،
+                    
+🛍️ *طلب شراء جديد*
+                    
+━━━━━━━━━━━━━━━━
+🏷️ *المنتج:* ${productName}
+🎨 *اللون:* ${colorName}
+📏 *المقاس:* ${size}
+🔢 *الكمية:* ${qty}
+💰 *السعر:* ${productPrice} DH
+💵 *الإجمالي:* ${parseInt(qty) * parseInt(productPrice)} DH
+━━━━━━━━━━━━━━━━
+
+📬 *بيانات التوصيل:*
+الاسم: 
+العنوان: 
+رقم الهاتف: 
+
+✅ الرجاء تأكيد الطلب`;
+                    
+                    // ترميز الرسالة
+                    const encodedMessage = encodeURIComponent(message);
+                    
+                    // فتح واتساب
+                    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+                    
+                    // تحديث عداد السلة (اختياري)
+                    const cartBadge = document.querySelector('.fa-shopping-bag + .cart-badge');
+                    const currentCount = parseInt(cartBadge.textContent || '0');
+                    cartBadge.textContent = currentCount + parseInt(qty);
+                });
+            });
+
+            // تفعيل النقر على نقاط الألوان
+            document.querySelectorAll('.color-dot').forEach(dot => {
+                dot.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const productCard = this.closest('.product-card');
+                    const productId = this.dataset.product;
+                    const color = this.dataset.color;
+                    
+                    // إزالة active من جميع النقاط في نفس المنتج
+                    productCard.querySelectorAll('.color-dot').forEach(d => {
+                        d.classList.remove('active');
+                    });
+                    
+                    // إضافة active للنقطة المختارة
+                    this.classList.add('active');
+                    
+                    // تغيير الصورة حسب اللون
+                    const img = productCard.querySelector('.product-image');
+                    if (color === 'black') {
+                        if (productId === '1' || productId === '2') {
+                            img.src = 'images/12.png';
+                        } else {
+                            img.src = 'images/22.png';
+                        }
+                    } else {
+                        if (productId === '1' || productId === '2') {
+                            img.src = 'images/11.png';
+                        } else {
+                            img.src = 'images/21.png';
+                        }
+                    }
+                });
+            });
+
+            // تفعيل الفلاتر
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
         };
     </script>
 </body>
