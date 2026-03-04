@@ -211,6 +211,10 @@
                 font-size: 0.7rem;
                 padding: 8px 0;
             }
+            .logo-img {
+                max-height: 35px;
+                max-width: 120px;
+            }
         }
 
         /* تحسينات للشاشات المتوسطة (تابلت) */
@@ -321,6 +325,23 @@
             background: white;
             color: black;
         }
+
+        /* تنسيق اللوجو */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo-img {
+            max-height: 50px;
+            max-width: 180px;
+            object-fit: contain;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .logo-img:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -344,7 +365,7 @@
                     </button>
                 </div>
 
-                <!-- القائمة الرئيسية - ديسكتوب -->
+                <!-- القائمة الرئيسية - ديسكتوب (يمين) -->
                 <nav class="hidden md:flex items-center space-x-8 space-x-reverse">
                     <a href="#" class="nav-link">HOME</a>
                     <a href="#" class="nav-link">SHOP</a>
@@ -352,12 +373,12 @@
                     <a href="#" class="nav-link">ABOUT</a>
                 </nav>
 
-                <!-- Logo -->
-                <div class="text-xl md:text-2xl font-black tracking-tighter">
-                    APEDA<span class="text-gray-300 font-light mx-px">.</span>
+                <!-- Logo في المنتصف - صورة من images/00.png -->
+                <div class="logo-container absolute left-1/2 transform -translate-x-1/2">
+                    <img src="images/00.png" alt="APEDA Logo" class="logo-img" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" onerror="this.onerror=null; this.src='https://placehold.co/180x50/000000/ffffff?text=APEDA'">
                 </div>
 
-                <!-- أيقونات -->
+                <!-- أيقونات (يسار) -->
                 <div class="flex items-center space-x-4 space-x-reverse">
                     <button class="hidden md:block text-sm hover:opacity-60">
                         <i class="far fa-user"></i>
@@ -415,7 +436,7 @@
                 <div class="product-card group mb-3">
                     <div class="relative bg-gray-50 aspect-[3/4] mb-2 overflow-hidden rounded-sm">
                         <!-- الصورة من مجلد images/ -->
-                        <img src="images/12.png" alt="تيشيرت إسينشال أسود" class="product-image" onerror="this.src='https://placehold.co/600x800/000000/ffffff?text=BLACK+TEE'">
+                        <img src="images/11.png" alt="تيشيرت إسينشال أسود" class="product-image" onerror="this.src='https://placehold.co/600x800/000000/ffffff?text=BLACK+TEE'">
                         
                         <!-- علامة محدود -->
                         <span class="sold-out">1/2</span>
@@ -462,7 +483,7 @@
                 <div class="product-card group mb-3">
                     <div class="relative bg-gray-50 aspect-[3/4] mb-2 overflow-hidden rounded-sm">
                         <!-- الصورة من مجلد images/ -->
-                        <img src="images/11.png" alt="تيشيرت إسينشال أبيض" class="product-image" onerror="this.src='https://placehold.co/600x800/ffffff/000000?text=WHITE+TEE'">
+                        <img src="images/12.png" alt="تيشيرت إسينشال أبيض" class="product-image" onerror="this.src='https://placehold.co/600x800/ffffff/000000?text=WHITE+TEE'">
                         
                         <span class="sold-out">2/2</span>
                         
@@ -505,7 +526,7 @@
                 <div class="product-card group mb-3">
                     <div class="relative bg-gray-50 aspect-[3/4] mb-2 overflow-hidden rounded-sm">
                         <!-- الصورة من مجلد images/ -->
-                        <img src="images/22.png" alt="سويت شيرت كلاسيك أسود" class="product-image" onerror="this.src='https://placehold.co/600x800/000000/ffffff?text=BLACK+SWEATER'">
+                        <img src="images/21.png" alt="سويت شيرت كلاسيك أسود" class="product-image" onerror="this.src='https://placehold.co/600x800/000000/ffffff?text=BLACK+SWEATER'">
                         
                         <span class="sold-out">1/2</span>
                         
@@ -548,7 +569,7 @@
                 <div class="product-card group mb-3">
                     <div class="relative bg-gray-50 aspect-[3/4] mb-2 overflow-hidden rounded-sm">
                         <!-- الصورة من مجلد images/ -->
-                        <img src="images/21.png" alt="سويت شيرت كلاسيك أبيض" class="product-image" onerror="this.src='https://placehold.co/600x800/ffffff/000000?text=WHITE+SWEATER'">
+                        <img src="images/22.png" alt="سويت شيرت كلاسيك أبيض" class="product-image" onerror="this.src='https://placehold.co/600x800/ffffff/000000?text=WHITE+SWEATER'">
                         
                         <span class="sold-out">2/2</span>
                         
@@ -646,7 +667,7 @@
     <!-- JavaScript -->
     <script>
         window.onload = function() {
-            console.log('✅ APEDA - 4 مونتوجات متجاوبة مع جميع الشاشات');
+            console.log('✅ APEDA - 4 مونتوجات مع اللوجو');
             
             // تفعيل أزرار الكمية
             document.querySelectorAll('.quantity-selector').forEach(selector => {
@@ -767,15 +788,15 @@
                     const img = productCard.querySelector('.product-image');
                     if (color === 'black') {
                         if (productId === '1' || productId === '2') {
-                            img.src = 'images/12.png';
-                        } else {
-                            img.src = 'images/22.png';
-                        }
-                    } else {
-                        if (productId === '1' || productId === '2') {
                             img.src = 'images/11.png';
                         } else {
                             img.src = 'images/21.png';
+                        }
+                    } else {
+                        if (productId === '1' || productId === '2') {
+                            img.src = 'images/12.png';
+                        } else {
+                            img.src = 'images/22.png';
                         }
                     }
                 });
