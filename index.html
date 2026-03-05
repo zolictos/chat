@@ -30,14 +30,14 @@
             display: none; 
             position: fixed; 
             inset: 0; 
-            background: rgba(0, 0, 0, 0.7); /* خلفية أغمق قليلاً للتركيز */
+            background: rgba(0, 0, 0, 0.7); 
             z-index: 1000; 
             align-items: center; 
             justify-content: center; 
             backdrop-filter: blur(10px); 
             padding: 20px;
             animation: fadeIn 0.3s ease;
-            cursor: pointer; /* ليشير للمستخدم أن الضغط هنا يغلق النافذة */
+            cursor: pointer; 
         }
 
         .modal-container {
@@ -47,7 +47,7 @@
             box-shadow: 0 40px 100px rgba(0,0,0,0.3);
             position: relative;
             animation: slideUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: default; /* لمنع إغلاق النافذة عند الضغط داخل الصندوق نفسه */
+            cursor: default; 
         }
 
         .input-group { position: relative; margin-bottom: 25px; }
@@ -65,7 +65,6 @@
         .qty-btn { width: 35px; height: 35px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .qty-val { width: 35px; text-align: center; border: none; font-size: 0.8rem; font-weight: 600; }
         
-        /* Close Button Styling */
         .close-modal-btn { 
             position: absolute; 
             top: 15px; 
@@ -120,15 +119,13 @@
 
     <main class="container mx-auto px-6 py-16">
         <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
-            <!-- المنتجات -->
+            <!-- المنتجات سيتم إنشاؤها عبر JavaScript -->
         </div>
     </main>
 
     <!-- PREMIUM MODAL -->
-    <!-- هنا أضفنا دالة الإغلاق عند الضغط على الخلفية -->
     <div id="orderModal" onclick="closeModal()">
         <div class="modal-container" onclick="event.stopPropagation()">
-            <!-- زر الإغلاق X -->
             <button class="close-modal-btn" onclick="closeModal()">
                 <i class="fas fa-times"></i>
             </button>
@@ -176,15 +173,15 @@
     </footer>
 
     <script>
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1479149405587247104/Gex8aMm2a9L6EhsFcQNBZ66_CE-9uhYm3j3zFvnv2rNQxh5nw8fDzgtuzVHWOa3xJEtM"; 
+        // إعدادات الواتساب فقط
         const WHATSAPP_NUMBER = "212777128266";
 
+        // قائمة المنتجات مع معرفات (ID) فريدة لضمان عمل الأزرار بشكل مستقل
         const PRODUCTS = [
             { id: 1, name: "ESSENTIAL TEE", price: 150, stock: "1/2", colors: [{ name: "Black", hex: "#000", img: "images/12.png" }, { name: "White", hex: "#fff", img: "images/11.png" }], sizes: ["S", "M", "L", "XL"] },
             { id: 2, name: "CLASSIC SWEATER", price: 199, stock: "1/1", colors: [{ name: "Black", hex: "#000", img: "images/22.png" }], sizes: ["S", "M", "L", "XL"] },
-            { id: 2, name: "CLASSIC SWEATER", price: 199, stock: "1/1", colors: [{ name: "Black", hex: "#000", img: "images/22.png" }], sizes: ["S", "M", "L", "XL"] },
-            { id: 2, name: "CLASSIC SWEATER", price: 199, stock: "1/1", colors: [{ name: "Black", hex: "#000", img: "images/22.png" }], sizes: ["S", "M", "L", "XL"] },
-
+            { id: 3, name: "CLASSIC SWEATER", price: 199, stock: "1/1", colors: [{ name: "Black", hex: "#000", img: "images/22.png" }], sizes: ["S", "M", "L", "XL"] },
+            { id: 4, name: "CLASSIC SWEATER", price: 199, stock: "1/1", colors: [{ name: "Black", hex: "#000", img: "images/22.png" }], sizes: ["S", "M", "L", "XL"] },
         ];
 
         let currentOrder = null;
@@ -226,7 +223,8 @@
         }
 
         window.updateColor = (pid, imgPath, el) => {
-            document.getElementById(`img-${pid}`).src = imgPath;
+            const imgEl = document.getElementById(`img-${pid}`);
+            if (imgEl) imgEl.src = imgPath;
             el.parentElement.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
             el.classList.add('active');
         };
@@ -247,7 +245,9 @@
             const p = PRODUCTS.find(item => item.id === pid);
             const size = card.querySelector('.size-btn.active').innerText;
             const qty = card.querySelector('.qty-val').value;
+            
             currentOrder = { product: p.name, price: p.price, size: size, qty: qty, total: p.price * qty };
+            
             document.getElementById('summaryContent').innerHTML = `
                 <div class="flex justify-between"><span>ITEM</span> <span>${currentOrder.product}</span></div>
                 <div class="flex justify-between"><span>SIZE</span> <span>${currentOrder.size}</span></div>
@@ -258,7 +258,6 @@
             document.body.style.overflow = 'hidden';
         };
 
-        // دالة الإغلاق المحسنة
         window.closeModal = () => { 
             document.getElementById('orderModal').style.display = 'none'; 
             document.body.style.overflow = '';
@@ -271,13 +270,21 @@
             const city = document.getElementById('custCity').value;
             const address = document.getElementById('custAddress').value;
 
-            const waMsg = `Hello APEDA Shop,\n\nORDER DETAILS:\nItem: ${currentOrder.product}\nSize: ${currentOrder.size}\nQty: ${currentOrder.qty}\nTotal: ${currentOrder.total} DH\n\nCUSTOMER:\nName: ${name}\nCity: ${city}\nAddress: ${address}\nPhone: ${phone}`;
+            // تجهيز نص رسالة الواتساب باللغة العربية واحترافية
+            const waMsg = `السلام عليكم APEDA Shop،\n\nأود تأكيد طلب شراء جديد:\n\n📦 تفاصيل المنتج:\n------------------\nالمنتج: ${currentOrder.product}\nالمقاس: ${currentOrder.size}\nالكمية: ${currentOrder.qty}\nالمجموع: ${currentOrder.total} درهم\n\n👤 معلومات الزبون:\n------------------\nالاسم: ${name}\nالمدينة: ${city}\nالعنوان: ${address}\nرقم الهاتف: ${phone}\n\nشكراً لكم.`;
+            
+            // فتح واتساب في نافذة جديدة
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`, '_blank');
+            
+            // تحديث عداد السلة كشكل جمالي
+            const cartCount = document.getElementById('cartCount');
+            cartCount.innerText = parseInt(cartCount.innerText) + parseInt(currentOrder.qty);
+            
             closeModal();
         };
 
+        // تشغيل عرض المنتجات عند تحميل الصفحة
         window.onload = renderProducts;
     </script>
 </body>
 </html>
-
